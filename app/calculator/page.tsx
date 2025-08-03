@@ -1,8 +1,13 @@
 import { InputPanel } from '@/components/calculator/InputPanel';
 import { ResultsChart } from '@/components/calculator/ResultsChart';
 import { MetricsDisplay } from '@/components/calculator/MetricsDisplay';
+import { currentUser } from '@clerk/nextjs/server';
+import { UserButton } from '@clerk/nextjs';
+import Link from 'next/link';
 
-export default function CalculatorPage() {
+export default async function CalculatorPage() {
+  const user = await currentUser();
+  
   return (
     <div className="command-center min-h-screen">
       {/* Header */}
@@ -17,9 +22,18 @@ export default function CalculatorPage() {
                 Model your hybrid revenue future with precision
               </p>
             </div>
-            <button className="btn-primary">
-              Create Free Account →
-            </button>
+            {user ? (
+              <div className="flex items-center gap-4">
+                <Link href="/dashboard" className="text-foreground hover:text-primary transition-colors">
+                  Dashboard
+                </Link>
+                <UserButton afterSignOutUrl="/" />
+              </div>
+            ) : (
+              <Link href="/sign-up" className="btn-primary">
+                Create Free Account →
+              </Link>
+            )}
           </div>
         </div>
       </header>
@@ -50,12 +64,25 @@ export default function CalculatorPage() {
               on achieving these growth targets.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="btn-primary">
-                Create Your Free Account
-              </button>
-              <button className="btn-secondary">
-                Schedule Strategy Sprint
-              </button>
+              {user ? (
+                <>
+                  <Link href="/dashboard" className="btn-primary">
+                    View Your Dashboard
+                  </Link>
+                  <button className="btn-secondary">
+                    Schedule Strategy Sprint
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href="/sign-up" className="btn-primary">
+                    Create Your Free Account
+                  </Link>
+                  <button className="btn-secondary">
+                    Schedule Strategy Sprint
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </section>
