@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #111111;
+    --foreground: #F5F5F5;
+    --primary: #C71F37;
+    --accent: #EF476F;
+    --secondary: #2B2D42;
+    --muted: #1A1A1A;
+    --border: #2A2A2A;
+    --input: #2A2A2A;
+    --ring: #C71F37;
+  }
+
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+  }
+
+  h1 {
+    @apply text-5xl md:text-6xl font-black;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl font-bold;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl font-bold;
+  }
+}
+
+@layer components {
+  .command-center {
+    @apply bg-gradient-to-br from-background via-background to-muted min-h-screen;
+  }
+  
+  .glass-panel {
+    @apply bg-muted/60 backdrop-blur-xl border border-border/50 rounded-xl shadow-2xl;
+  }
+  
+  .glass-panel-hover {
+    @apply hover:bg-muted/80 hover:border-border/70 transition-all duration-300;
+  }
+  
+  .data-metric {
+    @apply text-4xl md:text-5xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+
+  .data-metric-small {
+    @apply text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+  
+  .chart-container {
+    @apply glass-panel p-6 md:p-8;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-background border border-border rounded-lg text-foreground 
+           placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary 
+           focus:border-transparent transition-all duration-200;
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 bg-primary text-foreground font-semibold rounded-lg 
+           hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 
+           transition-all duration-200 active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-muted text-foreground font-semibold rounded-lg border border-border
+           hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-primary/50 
+           transition-all duration-200 active:scale-95;
+  }
+
+  .tooltip-trigger {
+    @apply inline-flex items-center justify-center w-5 h-5 rounded-full bg-border/50 
+           text-muted-foreground hover:bg-border hover:text-foreground 
+           transition-colors duration-200 cursor-help;
+  }
+
+  .section-title {
+    @apply text-lg font-semibold text-foreground/90 uppercase tracking-wider mb-4;
+  }
+
+  .input-label {
+    @apply block text-sm font-medium text-foreground/80 mb-2;
+  }
+
+  .metric-card {
+    @apply glass-panel p-6 flex flex-col space-y-2;
+  }
+
+  .metric-label {
+    @apply text-sm font-medium text-muted-foreground uppercase tracking-wider;
+  }
+
+  .metric-value {
+    @apply text-3xl font-bold text-foreground;
+  }
+
+  @keyframes pulse-slow {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 3s ease-in-out infinite;
+  }
+
+  @keyframes slide-up {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.5s ease-out;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-in-out;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
