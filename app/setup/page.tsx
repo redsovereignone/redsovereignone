@@ -213,10 +213,10 @@ export default function SetupPage() {
                     Step 4: Execute SQL
                   </h2>
                   <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
-                    <li>In the SQL Editor, click "New query"</li>
+                    <li>In the SQL Editor, click &quot;New query&quot;</li>
                     <li>Paste the SQL script (Cmd+V or Ctrl+V)</li>
-                    <li>Click the "Run" button</li>
-                    <li>You should see "Success. No rows returned"</li>
+                    <li>Click the &quot;Run&quot; button</li>
+                    <li>You should see &quot;Success. No rows returned&quot;</li>
                     <li>Come back here and check tables again</li>
                   </ol>
                 </div>

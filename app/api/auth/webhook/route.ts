@@ -1,10 +1,11 @@
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { Webhook } from 'svix'
-import { supabaseAdmin } from '@/lib/supabase/client'
+import { getSupabaseAdmin } from '@/lib/supabase/admin'
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET
+  const supabaseAdmin = getSupabaseAdmin()
 
   if (!WEBHOOK_SECRET) {
     throw new Error('Please add CLERK_WEBHOOK_SECRET from Clerk Dashboard to .env.local')

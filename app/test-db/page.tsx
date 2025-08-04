@@ -127,7 +127,7 @@ export default function TestDB() {
               </a>
             </li>
             <li>Copy and paste the SQL from <code className="text-xs bg-card px-2 py-1 rounded">supabase/setup.sql</code></li>
-            <li>Click "Run" to execute the SQL</li>
+            <li>Click &quot;Run&quot; to execute the SQL</li>
             <li>Come back here and test the connection</li>
           </ol>
         </div>
