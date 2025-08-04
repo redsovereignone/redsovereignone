@@ -7,54 +7,121 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 A sophisticated B2B SaaS lead generation tool that models hybrid revenue (recurring + one-time) for companies $1M-$5M ARR. This is a high-conversion interactive dashboard serving as the primary entry point for Red Sovereign's sales funnel.
 
+## Current Development Status 🚀
+
+### ✅ Completed Features
+- **Core Calculator**: Fully functional revenue modeling with MRR and project revenue
+- **Navigation System**: Fixed header with dashboard button and user profile menu
+- **Authentication**: Clerk integration with sign-in/sign-up flows
+- **Settings Pages**: Complete user settings system (profile, account, billing, preferences)
+- **Database Integration**: Supabase tables for users and scenarios
+- **Responsive Design**: Mobile-optimized with hamburger menu
+- **Glass Panel UI**: Consistent design system across all components
+- **Deployment**: Live on Vercel with CI/CD from GitHub
+
+### 🔄 In Progress / Needs Attention
+- **Scenario Saving**: Backend API exists but needs frontend integration
+- **Actuals Tracking**: Database schema ready, UI components pending
+- **Data Export**: Placeholder buttons ready, implementation needed
+- **Comparison View**: ScenarioList component exists, needs comparison logic
+
+### 🎯 Priority Next Steps
+
+#### 1. Complete Scenario Saving Flow
+```typescript
+// In SaveScenarioModal.tsx, add:
+const handleSave = async () => {
+  const response = await fetch('/api/scenarios', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: scenarioName,
+      ...calculatorState
+    })
+  })
+  // Handle response, close modal, redirect to dashboard
+}
+```
+
+#### 2. Implement Actuals vs Forecast
+```typescript
+// Create new component: components/dashboard/ActualsTracker.tsx
+// Add form for monthly actual inputs
+// Store in 'actuals' table with scenario_id reference
+// Display variance chart comparing actuals vs projections
+```
+
+#### 3. Enable Data Export
+```typescript
+// Create new API route: app/api/export/route.ts
+// Generate CSV from scenario data
+// Use libraries: 'papaparse' for CSV, 'jspdf' for PDF
+// Add download buttons to dashboard
+```
+
+#### 4. Add Comparison Features
+```typescript
+// Enhance ScenarioList.tsx with:
+// - Checkbox selection for comparison
+// - Side-by-side metrics display
+// - Difference highlighting
+// - Sensitivity sliders for what-if analysis
+```
+
 ## Tech Stack
-- Framework: Next.js 14 (App Router)
-- Auth: Clerk
-- Database: Supabase (PostgreSQL)
-- Charts: Recharts
-- Styling: Tailwind CSS
-- State: Zustand
-- Deployment: Vercel
+- **Framework**: Next.js 14 (App Router)
+- **Auth**: Clerk (configured and working)
+- **Database**: Supabase (tables created, RLS disabled for dev)
+- **Charts**: Recharts (area charts implemented)
+- **Styling**: Tailwind CSS + custom glass panel design
+- **State**: Zustand (calculator store configured)
+- **UI Components**: Radix UI primitives
+- **Deployment**: Vercel (auto-deploy from main branch)
 
-## Development Commands
+## Quick Start for Continuing Development
 
-### Initial Setup
 ```bash
-# Create Next.js project (if not initialized)
-npx create-next-app@latest . --typescript --tailwind --app --eslint
+# Dependencies are already installed, just run:
+npm run dev
 
-# Install dependencies
-npm install
+# Before committing, always run:
+npm run lint:fix
+npm run type-check
+npm run build
 
-# Install additional packages
-npm install @clerk/nextjs @supabase/supabase-js recharts zustand
-npm install -D @types/node
+# Common commands
+npm run dev          # Start dev server (http://localhost:3000)
+npm run build        # Test production build
+npm run lint:fix     # Fix linting issues
+npm run type-check   # Check TypeScript types
 ```
 
-### Common Commands
-```bash
-# Development
-npm run dev          # Start development server on http://localhost:3000
+## Key Files for Continuation
 
-# Build & Production
-npm run build        # Build for production
-npm run start        # Start production server
+### Most Important Files to Understand
+1. **`components/calculator/Calculator.tsx`** - Main calculator component, handles all revenue modeling
+2. **`stores/calculator.ts`** - Zustand store for calculator state management
+3. **`app/(auth)/dashboard/page.tsx`** - Dashboard entry point, shows user's scenarios
+4. **`lib/calculations/hybrid.ts`** - Core revenue calculation logic
+5. **`components/layout/Navigation.tsx`** - Main navigation header component
+6. **`app/api/scenarios/route.ts`** - API for saving/loading scenarios
 
-# Code Quality
-npm run lint         # Run ESLint
-npm run lint:fix     # Fix auto-fixable lint issues
-npm run type-check   # Run TypeScript compiler check
+### Files That Need Work
+1. **`components/calculator/SaveScenarioModal.tsx`** - Needs API connection
+2. **`components/dashboard/ScenarioList.tsx`** - Needs delete/edit functionality
+3. **`app/api/scenarios/[id]/route.ts`** - Update/delete endpoints need testing
+4. **Export functionality** - No files exist yet, needs creation
 
-# Testing (once configured)
-npm run test         # Run all tests
-npm run test:watch   # Run tests in watch mode
-```
+### Configuration Files
+- **`.env.local`** - All environment variables (DO NOT commit)
+- **`middleware.ts`** - Clerk auth middleware configuration
+- **`tailwind.config.ts`** - Custom colors and theme configuration
+- **`tsconfig.json`** - TypeScript configuration
 
 ## Project Architecture
 
 ### Directory Structure
 ```
-src/
 ├── app/                      # Next.js App Router
 │   ├── (auth)/              # Authenticated routes group
 │   │   ├── dashboard/       # Main dashboard page
@@ -177,6 +244,47 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 ```
 
-## Development Status
-Current Sprint: Foundation & Public Dashboard
-Next Milestone: Public calculator live
+## Known Issues & Solutions
+
+### Common Development Issues
+1. **Port 3000 in use**: Kill process with `lsof -ti:3000 | xargs kill -9`
+2. **Build errors**: Run `npm run lint:fix` then `npm run build`
+3. **Supabase connection**: Check `.env.local` has all required keys
+4. **Clerk auth issues**: Verify webhook secret is configured
+
+### Testing Checklist
+- [ ] Calculator saves scenarios correctly
+- [ ] Dashboard displays user's scenarios
+- [ ] Settings pages load without errors
+- [ ] Mobile navigation works properly
+- [ ] Chart tooltips show correct formatting
+- [ ] Sign in/out flow works smoothly
+
+## Development Workflow
+
+### Adding New Features
+1. **Plan First**: Update this CLAUDE.md with the feature plan
+2. **Create Branch**: Work on feature branches when possible
+3. **Test Locally**: Always run `npm run build` before pushing
+4. **Document**: Update relevant documentation
+5. **Deploy**: Push to main for auto-deployment to Vercel
+
+### Code Quality Standards
+- **TypeScript**: Strict mode enabled, no `any` types
+- **Components**: Prefer composition, keep under 200 lines
+- **Styling**: Use Tailwind classes, maintain glass panel aesthetic
+- **State**: Use Zustand for global, useState for local
+- **API**: Keep routes simple, handle errors properly
+
+## Important Links & Resources
+- **Live Site**: https://redsovereignone.vercel.app
+- **Supabase Dashboard**: Check project for URL
+- **Clerk Dashboard**: https://clerk.com
+- **GitHub Repo**: https://github.com/redsovereignone/redsovereignone
+
+## Contact & Support
+For questions about continuing development:
+1. Review this CLAUDE.md first
+2. Check TROUBLESHOOTING.md for common issues
+3. Look at existing patterns in codebase
+4. Maintain consistency with established patterns
