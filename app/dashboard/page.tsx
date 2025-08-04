@@ -2,6 +2,7 @@ import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { UserButton } from '@clerk/nextjs'
+import { userButtonAppearance } from '@/lib/clerk-theme'
 import { Calculator, TrendingUp, FileText, Settings } from 'lucide-react'
 
 export default async function DashboardPage() {
@@ -39,15 +40,7 @@ export default async function DashboardPage() {
               </span>
               <UserButton 
                 afterSignOutUrl="/"
-                appearance={{
-                  baseTheme: 'dark',
-                  elements: {
-                    avatarBox: 'w-10 h-10',
-                    userButtonPopoverCard: 'bg-muted border border-border',
-                    userButtonPopoverText: 'text-foreground',
-                    userButtonPopoverFooter: 'hidden',
-                  },
-                }}
+                appearance={userButtonAppearance}
               />
             </div>
           </div>

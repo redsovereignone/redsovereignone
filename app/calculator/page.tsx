@@ -3,6 +3,7 @@ import { ResultsChart } from '@/components/calculator/ResultsChart';
 import { MetricsDisplay } from '@/components/calculator/MetricsDisplay';
 import { currentUser } from '@clerk/nextjs/server';
 import { UserButton } from '@clerk/nextjs';
+import { userButtonAppearance } from '@/lib/clerk-theme';
 import Link from 'next/link';
 
 export default async function CalculatorPage() {
@@ -29,15 +30,7 @@ export default async function CalculatorPage() {
                 </Link>
                 <UserButton 
                   afterSignOutUrl="/"
-                  appearance={{
-                    baseTheme: 'dark',
-                    elements: {
-                      avatarBox: 'w-10 h-10',
-                      userButtonPopoverCard: 'bg-muted border border-border',
-                      userButtonPopoverText: 'text-foreground',
-                      userButtonPopoverFooter: 'hidden',
-                    },
-                  }}
+                  appearance={userButtonAppearance}
                 />
               </div>
             ) : (
