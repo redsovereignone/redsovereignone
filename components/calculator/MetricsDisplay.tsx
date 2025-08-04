@@ -1,100 +1,84 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { useCalculatorStore } from '@/stores/calculator';
-import { formatRevenue, formatPercentage } from '@/lib/calculations/hybrid';
-import { TrendingUp, DollarSign, PieChart, Target } from 'lucide-react';
+import { RevenueMetrics } from '@/types/revenue'
+import { TrendingUp, DollarSign, Target, PieChart, ArrowUp, ArrowDown } from 'lucide-react'
 
-interface MetricCardProps {
-  label: string;
-  value: string;
-  icon: React.ReactNode;
-  trend?: string;
-  delay?: string;
+interface MetricsDisplayProps {
+  metrics: RevenueMetrics
 }
 
-function MetricCard({ label, value, icon, trend, delay = '0s' }: MetricCardProps) {
-  return (
-    <div 
-      className="metric-card animate-slide-up" 
-      style={{ animationDelay: delay }}
-    >
-      <div className="flex items-center justify-between mb-2">
-        <span className="metric-label">{label}</span>
-        <span className="text-primary">{icon}</span>
-      </div>
-      <div className="metric-value text-gradient">{value}</div>
-      {trend && (
-        <div className="text-sm text-muted-foreground mt-1">{trend}</div>
-      )}
-    </div>
-  );
-}
-
-export function MetricsDisplay() {
-  const { results } = useCalculatorStore();
-
-  if (!results || !results.metrics) {
-    return null;
+export default function MetricsDisplay({ metrics }: MetricsDisplayProps) {
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+      notation: 'compact'
+    }).format(value)
   }
-
-  const { metrics } = results;
-
+  
+  const formatPercent = (value: number) => {
+    return `${value.toFixed(1)}%`
+  }
+  
   return (
-    <div className="space-y-6">
-      <h3 className="section-title">Key Performance Indicators</h3>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard
-          label="Projected ARR (12 mo)"
-          value={formatRevenue(metrics.projectedARR)}
-          icon={<Target className="w-5 h-5" />}
-          trend="Annual Recurring Revenue"
-          delay="0s"
-        />
-        
-        <MetricCard
-          label="Total Revenue (24 mo)"
-          value={formatRevenue(metrics.totalRevenue24Months)}
-          icon={<DollarSign className="w-5 h-5" />}
-          trend="Combined all revenue streams"
-          delay="0.1s"
-        />
-        
-        <MetricCard
-          label="Revenue Mix"
-          value={`${formatPercentage(metrics.recurringPercentage)} Recurring`}
-          icon={<PieChart className="w-5 h-5" />}
-          trend={`${formatPercentage(metrics.projectPercentage)} Projects`}
-          delay="0.2s"
-        />
-        
-        <MetricCard
-          label="Monthly Growth Rate"
-          value={formatPercentage(metrics.monthlyGrowthRate)}
-          icon={<TrendingUp className="w-5 h-5" />}
-          trend="Compound monthly growth"
-          delay="0.3s"
-        />
+    <div className="stats-grid">
+      <div className="metric-card">
+        <div className="flex items-center justify-between mb-3">
+          <DollarSign className="w-8 h-8 text-primary" />
+          <span className="badge badge-success">24M</span>
+        </div>
+        <p className="metric-label">Total Revenue</p>
+        <p className="metric-value">{formatCurrency(metrics.totalRevenue24Months)}</p>
+        <div className="metric-change text-chart-3">
+          <ArrowUp className="w-3 h-3" />
+          <span>{formatPercent(metrics.effectiveGrowthRate)}</span>
+        </div>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <MetricCard
-          label="12-Month Revenue"
-          value={formatRevenue(metrics.totalRevenue12Months)}
-          icon={<DollarSign className="w-5 h-5" />}
-          trend="Next 12 months total"
-          delay="0.4s"
-        />
-        
-        <MetricCard
-          label="Current Run Rate"
-          value={formatRevenue(metrics.currentRunRate)}
-          icon={<TrendingUp className="w-5 h-5" />}
-          trend="Annualized current revenue"
-          delay="0.5s"
-        />
+      
+      <div className="metric-card">
+        <div className="flex items-center justify-between mb-3">
+          <Target className="w-8 h-8 text-chart-3" />
+          <span className="badge badge-warning">M24</span>
+        </div>
+        <p className="metric-label">Ending MRR</p>
+        <p className="metric-value">{formatCurrency(metrics.endingMRR)}</p>
+        <div className="form-helper">
+          ARR: {formatCurrency(metrics.endingMRR * 12)}
+        </div>
+      </div>
+      
+      <div className="metric-card">
+        <div className="flex items-center justify-between mb-3">
+          <TrendingUp className="w-8 h-8 text-chart-5" />
+          <span className="text-xs text-muted-foreground">Growth</span>
+        </div>
+        <p className="metric-label">Effective Growth</p>
+        <p className="metric-value text-chart-5">{formatPercent(metrics.effectiveGrowthRate)}</p>
+        <div className="form-helper">
+          Over 24 months
+        </div>
+      </div>
+      
+      <div className="metric-card">
+        <div className="flex items-center justify-between mb-3">
+          <PieChart className="w-8 h-8 text-chart-1" />
+          <span className="text-xs text-muted-foreground">Split</span>
+        </div>
+        <p className="metric-label">Revenue Mix</p>
+        <div className="flex items-center gap-3 mt-2">
+          <div className="flex-1">
+            <div className="text-sm font-semibold text-primary">{formatPercent(metrics.mrrContribution)}</div>
+            <div className="text-xs text-muted-foreground">MRR</div>
+          </div>
+          <div className="w-px h-8 bg-border" />
+          <div className="flex-1">
+            <div className="text-sm font-semibold text-chart-3">{formatPercent(metrics.projectContribution)}</div>
+            <div className="text-xs text-muted-foreground">Projects</div>
+          </div>
+        </div>
       </div>
     </div>
-  );
+  )
 }

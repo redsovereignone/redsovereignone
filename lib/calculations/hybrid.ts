@@ -1,116 +1,72 @@
-import { 
-  RevenueInputs, 
-  MonthlyProjection, 
-  RevenueMetrics, 
-  CalculationResult 
-} from '@/types/revenue';
-import { calculateMRR, calculateARR, calculateGrowthRate } from './mrr';
-import { calculateProjectRevenue } from './projects';
+import { RevenueInputs, RevenueProjection, MonthlyRevenue, RevenueMetrics } from '@/types/revenue'
+import { calculateMRR, calculateMRRGrowth } from './mrr'
+import { calculateProjectRevenue, calculateProjectGrowth } from './projects'
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-export function calculateHybridRevenue(inputs: RevenueInputs): CalculationResult {
-  // Calculate MRR projections (compound growth)
-  const mrrProjections = calculateMRR(inputs.recurring, inputs.projectionMonths);
+export function calculateHybridRevenue(inputs: RevenueInputs): RevenueProjection {
+  const months: MonthlyRevenue[] = []
+  let cumulativeRevenue = 0
   
-  // Calculate project revenue projections (linear growth)
-  const projectProjections = calculateProjectRevenue(inputs.projects, inputs.projectionMonths);
-  
-  // Combine into monthly projections
-  const projections: MonthlyProjection[] = [];
-  let cumulativeRevenue = 0;
-  
-  const currentDate = new Date();
-  
-  for (let i = 0; i < inputs.projectionMonths; i++) {
-    const mrr = mrrProjections[i];
-    const project = projectProjections[i];
+  for (let month = 0; month < 24; month++) {
+    const mrr = calculateMRR(inputs.initialMRR, inputs.mrrGrowthRate, inputs.churnRate, month)
+    const projectRevenue = calculateProjectRevenue(inputs.projectRevenue, inputs.projectGrowthRate, month)
+    const totalRevenue = mrr + projectRevenue
+    cumulativeRevenue += totalRevenue
     
-    // Calculate month label
-    const monthIndex = (currentDate.getMonth() + i) % 12;
-    const yearOffset = Math.floor((currentDate.getMonth() + i) / 12);
-    const year = currentDate.getFullYear() + yearOffset;
-    const monthLabel = `${MONTHS[monthIndex]} ${year}`;
+    const previousMRR = month === 0 ? inputs.initialMRR : months[month - 1].mrr
+    const previousProject = month === 0 ? inputs.projectRevenue : months[month - 1].projectRevenue
     
-    // Calculate total revenue for the month
-    const totalRevenue = mrr.totalMRR + project.revenue;
-    cumulativeRevenue += totalRevenue;
-    
-    projections.push({
-      month: i + 1,
-      monthLabel,
-      existingMRR: mrr.existingMRR,
-      newMRR: mrr.newMRR + mrr.expansionMRR,
-      totalMRR: mrr.totalMRR,
-      projectRevenue: project.revenue,
+    months.push({
+      month: month + 1,
+      monthLabel: getMonthLabel(month),
+      mrr,
+      projectRevenue,
       totalRevenue,
-      cumulativeRevenue
-    });
+      cumulativeRevenue,
+      mrrGrowth: calculateMRRGrowth(previousMRR, mrr),
+      projectGrowth: calculateProjectGrowth(previousProject, projectRevenue)
+    })
   }
   
-  // Calculate metrics
-  const metrics = calculateMetrics(projections, inputs);
+  const metrics = calculateMetrics(months, inputs)
   
   return {
-    projections,
+    months,
     metrics
-  };
+  }
 }
 
-function calculateMetrics(
-  projections: MonthlyProjection[], 
-  inputs: RevenueInputs
-): RevenueMetrics {
-  // Get values at specific time points
-  const month12 = projections[11] || projections[projections.length - 1];
-  const month24 = projections[23] || projections[projections.length - 1];
-  const lastMonth = projections[projections.length - 1];
-  
-  // Calculate total revenues
-  const totalRevenue12Months = projections
-    .slice(0, 12)
-    .reduce((sum, month) => sum + month.totalRevenue, 0);
-    
-  const totalRevenue24Months = projections
-    .reduce((sum, month) => sum + month.totalRevenue, 0);
-  
-  // Calculate revenue composition
-  const totalMRR24 = projections.reduce((sum, month) => sum + month.totalMRR, 0);
-  const totalProjects24 = projections.reduce((sum, month) => sum + month.projectRevenue, 0);
-  const totalRevenue = totalMRR24 + totalProjects24;
-  
-  const recurringPercentage = totalRevenue > 0 ? (totalMRR24 / totalRevenue) * 100 : 0;
-  const projectPercentage = totalRevenue > 0 ? (totalProjects24 / totalRevenue) * 100 : 0;
-  
-  // Calculate growth rate
-  const startMRR = inputs.recurring.currentMRR;
-  const endMRR = lastMonth.totalMRR;
-  const monthlyGrowthRate = calculateGrowthRate(startMRR, endMRR, projections.length);
-  
-  // Calculate ARR and run rate
-  const projectedARR = calculateARR(month12.totalMRR);
-  const currentRunRate = calculateARR(projections[0].totalMRR + projections[0].projectRevenue);
+function calculateMetrics(months: MonthlyRevenue[], inputs: RevenueInputs): RevenueMetrics {
+  const totalRevenue24Months = months.reduce((sum, m) => sum + m.totalRevenue, 0)
+  const totalMRR = months.reduce((sum, m) => sum + m.mrr, 0)
+  const totalProjects = months.reduce((sum, m) => sum + m.projectRevenue, 0)
   
   return {
-    projectedARR,
-    totalRevenue12Months,
     totalRevenue24Months,
-    recurringPercentage,
-    projectPercentage,
-    monthlyGrowthRate,
-    currentRunRate
-  };
-}
-
-export function formatRevenue(value: number): string {
-  if (value >= 1000000) {
-    return `$${(value / 1000000).toFixed(2)}M`;
-  } else if (value >= 1000) {
-    return `$${(value / 1000).toFixed(0)}K`;
+    averageMonthlyRevenue: totalRevenue24Months / 24,
+    endingMRR: months[23].mrr,
+    endingProjectRevenue: months[23].projectRevenue,
+    effectiveGrowthRate: ((months[23].totalRevenue - months[0].totalRevenue) / months[0].totalRevenue) * 100,
+    mrrContribution: (totalMRR / totalRevenue24Months) * 100,
+    projectContribution: (totalProjects / totalRevenue24Months) * 100
   }
-  return `$${value.toFixed(0)}`;
 }
 
-export function formatPercentage(value: number): string {
-  return `${value.toFixed(1)}%`;
+function getMonthLabel(monthIndex: number): string {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  const currentDate = new Date()
+  const currentMonth = currentDate.getMonth()
+  const currentYear = currentDate.getFullYear()
+  
+  // Calculate the target date by adding months
+  const targetDate = new Date(currentYear, currentMonth + monthIndex + 1, 1)
+  const targetMonth = targetDate.getMonth()
+  const targetYear = targetDate.getFullYear()
+  
+  // For the first 12 months, just show the month
+  // For months 13-24, show month + year to distinguish
+  if (monthIndex >= 12) {
+    return `${months[targetMonth]} ${targetYear}`
+  }
+  
+  return months[targetMonth]
 }

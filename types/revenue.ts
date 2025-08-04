@@ -1,47 +1,35 @@
-export interface RecurringRevenueInputs {
-  currentMRR: number;
-  newCustomersPerMonth: number;
-  averageMRRPerCustomer: number;
-  monthlyGrowthFromExisting: number;
-  monthlyChurnRate: number;
-}
-
-export interface ProjectRevenueInputs {
-  newProjectsPerMonth: number;
-  averageProjectValue: number;
-  averageTimeToClose: number;
-}
-
 export interface RevenueInputs {
-  recurring: RecurringRevenueInputs;
-  projects: ProjectRevenueInputs;
-  projectionMonths: number;
+  initialMRR: number
+  mrrGrowthRate: number
+  projectRevenue: number
+  projectGrowthRate: number
+  churnRate: number
 }
 
-export interface MonthlyProjection {
-  month: number;
-  monthLabel: string;
-  existingMRR: number;
-  newMRR: number;
-  totalMRR: number;
-  projectRevenue: number;
-  totalRevenue: number;
-  cumulativeRevenue: number;
+export interface MonthlyRevenue {
+  month: number
+  monthLabel: string
+  mrr: number
+  projectRevenue: number
+  totalRevenue: number
+  cumulativeRevenue: number
+  mrrGrowth: number
+  projectGrowth: number
 }
 
 export interface RevenueMetrics {
-  projectedARR: number;
-  totalRevenue12Months: number;
-  totalRevenue24Months: number;
-  recurringPercentage: number;
-  projectPercentage: number;
-  monthlyGrowthRate: number;
-  currentRunRate: number;
+  totalRevenue24Months: number
+  averageMonthlyRevenue: number
+  endingMRR: number
+  endingProjectRevenue: number
+  effectiveGrowthRate: number
+  mrrContribution: number
+  projectContribution: number
 }
 
-export interface CalculationResult {
-  projections: MonthlyProjection[];
-  metrics: RevenueMetrics;
+export interface RevenueProjection {
+  months: MonthlyRevenue[]
+  metrics: RevenueMetrics
 }
 
 export interface TooltipContent {

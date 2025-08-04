@@ -16,8 +16,8 @@ export const clerkAppearance = {
     borderRadius: '0.5rem',
   },
   layout: {
-    socialButtonsPlacement: 'top',
-    socialButtonsVariant: 'blockButton',
+    socialButtonsPlacement: 'top' as const,
+    socialButtonsVariant: 'blockButton' as const,
   },
   elements: {
     rootBox: 'mx-auto',

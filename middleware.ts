@@ -5,6 +5,8 @@ const isProtectedRoute = createRouteMatcher([
   '/dashboard(.*)',
   '/scenarios(.*)',
   '/settings(.*)',
+  '/api/scenarios(.*)',
+  '/api/actuals(.*)',
 ])
 
 // Define which routes should always be public
@@ -12,6 +14,7 @@ const isPublicRoute = createRouteMatcher([
   '/',
   '/calculator(.*)',
   '/api/public(.*)',
+  '/api/auth/webhook(.*)',
   '/sign-in(.*)',
   '/sign-up(.*)',
 ])

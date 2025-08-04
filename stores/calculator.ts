@@ -1,101 +1,77 @@
-import { create } from 'zustand';
-import { RevenueInputs, CalculationResult } from '@/types/revenue';
-import { calculateHybridRevenue } from '@/lib/calculations/hybrid';
+import { create } from 'zustand'
+import { RevenueInputs, RevenueProjection } from '@/types/revenue'
+import { calculateHybridRevenue } from '@/lib/calculations/hybrid'
 
 interface CalculatorState {
-  inputs: RevenueInputs;
-  results: CalculationResult | null;
-  isCalculating: boolean;
+  inputs: RevenueInputs
+  projection: RevenueProjection | null
+  isCalculating: boolean
+  scenarioContext: {
+    id?: string
+    name?: string
+  } | null
   
-  // Actions
-  updateRecurringInputs: (inputs: Partial<RevenueInputs['recurring']>) => void;
-  updateProjectInputs: (inputs: Partial<RevenueInputs['projects']>) => void;
-  updateProjectionMonths: (months: number) => void;
-  calculate: () => void;
-  reset: () => void;
+  setInputs: (inputs: Partial<RevenueInputs>) => void
+  loadScenario: (scenario: any) => void
+  calculate: () => void
+  reset: () => void
+  setScenarioContext: (context: { id?: string; name?: string } | null) => void
 }
 
 const defaultInputs: RevenueInputs = {
-  recurring: {
-    currentMRR: 100000,
-    newCustomersPerMonth: 5,
-    averageMRRPerCustomer: 2000,
-    monthlyGrowthFromExisting: 2,
-    monthlyChurnRate: 3,
-  },
-  projects: {
-    newProjectsPerMonth: 2,
-    averageProjectValue: 25000,
-    averageTimeToClose: 30,
-  },
-  projectionMonths: 24,
-};
+  initialMRR: 100000,
+  mrrGrowthRate: 15,
+  projectRevenue: 50000,
+  projectGrowthRate: 10,
+  churnRate: 5
+}
 
 export const useCalculatorStore = create<CalculatorState>((set, get) => ({
   inputs: defaultInputs,
-  results: null,
+  projection: null,
   isCalculating: false,
+  scenarioContext: null,
   
-  updateRecurringInputs: (recurringInputs) => {
+  setInputs: (newInputs) => {
     set((state) => ({
-      inputs: {
-        ...state.inputs,
-        recurring: {
-          ...state.inputs.recurring,
-          ...recurringInputs,
-        },
-      },
-    }));
-    // Auto-calculate on input change
-    get().calculate();
+      inputs: { ...state.inputs, ...newInputs }
+    }))
   },
   
-  updateProjectInputs: (projectInputs) => {
-    set((state) => ({
+  loadScenario: (scenario) => {
+    set({
       inputs: {
-        ...state.inputs,
-        projects: {
-          ...state.inputs.projects,
-          ...projectInputs,
-        },
+        initialMRR: Number(scenario.initial_mrr),
+        mrrGrowthRate: Number(scenario.mrr_growth_rate),
+        projectRevenue: Number(scenario.project_revenue),
+        projectGrowthRate: Number(scenario.project_growth_rate),
+        churnRate: Number(scenario.churn_rate)
       },
-    }));
-    // Auto-calculate on input change
-    get().calculate();
-  },
-  
-  updateProjectionMonths: (months) => {
-    set((state) => ({
-      inputs: {
-        ...state.inputs,
-        projectionMonths: months,
+      scenarioContext: {
+        id: scenario.id,
+        name: scenario.name
       },
-    }));
-    // Auto-calculate on input change
-    get().calculate();
+      projection: null
+    })
   },
   
   calculate: () => {
-    const { inputs } = get();
-    set({ isCalculating: true });
-    
-    try {
-      const results = calculateHybridRevenue(inputs);
-      set({ results, isCalculating: false });
-    } catch (error) {
-      console.error('Calculation error:', error);
-      set({ isCalculating: false });
-    }
+    set({ isCalculating: true })
+    const { inputs } = get()
+    const projection = calculateHybridRevenue(inputs)
+    set({ projection, isCalculating: false })
   },
   
   reset: () => {
     set({
       inputs: defaultInputs,
-      results: null,
+      projection: null,
       isCalculating: false,
-    });
+      scenarioContext: null
+    })
   },
-}));
-
-// Initialize with calculations on store creation
-useCalculatorStore.getState().calculate();
+  
+  setScenarioContext: (context) => {
+    set({ scenarioContext: context })
+  }
+}))

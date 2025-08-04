@@ -6,15 +6,56 @@
 
 @layer base {
   :root {
-    --background: #111111;
-    --foreground: #F5F5F5;
-    --primary: #C71F37;
-    --accent: #EF476F;
-    --secondary: #2B2D42;
-    --muted: #1A1A1A;
-    --border: #2A2A2A;
-    --input: #2A2A2A;
-    --ring: #C71F37;
+    --radius: 0.65rem;
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.141 0.005 285.823);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.141 0.005 285.823);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.141 0.005 285.823);
+    --primary: oklch(0.637 0.237 25.331);
+    --primary-foreground: oklch(0.971 0.013 17.38);
+    --secondary: oklch(0.967 0.001 286.375);
+    --secondary-foreground: oklch(0.21 0.006 285.885);
+    --muted: oklch(0.967 0.001 286.375);
+    --muted-foreground: oklch(0.552 0.016 285.938);
+    --accent: oklch(0.967 0.001 286.375);
+    --accent-foreground: oklch(0.21 0.006 285.885);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.92 0.004 286.32);
+    --input: oklch(0.92 0.004 286.32);
+    --ring: oklch(0.637 0.237 25.331);
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+  }
+
+  .dark {
+    --background: oklch(0.141 0.005 285.823);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.21 0.006 285.885);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.21 0.006 285.885);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.637 0.237 25.331);
+    --primary-foreground: oklch(0.971 0.013 17.38);
+    --secondary: oklch(0.274 0.006 286.033);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.274 0.006 286.033);
+    --muted-foreground: oklch(0.705 0.015 286.067);
+    --accent: oklch(0.274 0.006 286.033);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.637 0.237 25.331);
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
   }
 
   * {
@@ -28,107 +69,205 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold tracking-tight;
-  }
-
-  h1 {
-    @apply text-5xl md:text-6xl font-black;
-  }
-
-  h2 {
-    @apply text-3xl md:text-4xl font-bold;
-  }
-
-  h3 {
-    @apply text-2xl md:text-3xl font-bold;
+    @apply font-semibold tracking-tight;
   }
 }
 
 @layer components {
-  .command-center {
-    @apply bg-gradient-to-br from-background via-background to-muted min-h-screen;
-  }
-  
   .glass-panel {
-    @apply bg-muted/60 backdrop-blur-xl border border-border/50 rounded-xl shadow-2xl;
+    @apply bg-card backdrop-blur-2xl border border-border rounded-lg shadow-xl;
+    background-color: oklch(var(--card) / 0.8);
+    border-color: oklch(var(--border) / 0.4);
   }
   
   .glass-panel-hover {
-    @apply hover:bg-muted/80 hover:border-border/70 transition-all duration-300;
+    @apply transition-all duration-300 hover:shadow-2xl;
   }
   
-  .data-metric {
-    @apply text-4xl md:text-5xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  .glass-panel-hover:hover {
+    background-color: oklch(var(--card) / 0.9);
+    border-color: oklch(var(--border) / 0.6);
   }
-
-  .data-metric-small {
-    @apply text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  
+  .metric-card {
+    @apply glass-panel p-6 flex flex-col gap-3 relative overflow-hidden;
+  }
+  
+  .metric-card::before {
+    @apply absolute inset-0 pointer-events-none;
+    background: linear-gradient(to bottom right, oklch(var(--primary) / 0.05), transparent);
+    content: '';
+  }
+  
+  .metric-label {
+    @apply text-xs font-medium text-muted-foreground uppercase tracking-wider;
+  }
+  
+  .metric-value {
+    @apply text-2xl font-bold text-foreground;
+  }
+  
+  .metric-change {
+    @apply text-sm font-medium flex items-center gap-1;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-2.5 bg-input border border-border rounded-md
+           text-foreground placeholder:text-muted-foreground 
+           focus:outline-none focus:ring-1 focus:ring-ring
+           transition-all duration-200;
+    background-color: oklch(var(--input) / 0.5);
+    border-color: oklch(var(--border) / 0.5);
+  }
+  
+  .input-field:focus {
+    border-color: oklch(var(--ring) / 0.5);
+  }
+  
+  .btn-primary {
+    @apply px-5 py-2.5 bg-primary text-primary-foreground font-medium rounded-md
+           focus:outline-none focus:ring-2 
+           transition-all duration-200 active:scale-[0.98] shadow-sm;
+  }
+  
+  .btn-primary:hover {
+    background-color: oklch(var(--primary) / 0.9);
+  }
+  
+  .btn-primary:focus {
+    box-shadow: 0 0 0 2px oklch(var(--ring) / 0.5);
+  }
+  
+  .btn-secondary {
+    @apply px-5 py-2.5 bg-secondary text-secondary-foreground font-medium rounded-md
+           border border-border focus:outline-none focus:ring-2 
+           transition-all duration-200 active:scale-[0.98];
+  }
+  
+  .btn-secondary:hover {
+    background-color: oklch(var(--secondary) / 0.8);
+  }
+  
+  .btn-secondary:focus {
+    box-shadow: 0 0 0 2px oklch(var(--ring) / 0.5);
+  }
+  
+  .btn-ghost {
+    @apply px-5 py-2.5 hover:bg-accent hover:text-accent-foreground font-medium rounded-md
+           transition-all duration-200 active:scale-[0.98];
+  }
+  
+  .nav-item {
+    @apply px-4 py-2 text-sm font-medium text-muted-foreground 
+           hover:text-foreground rounded-sm
+           transition-all duration-200 cursor-pointer;
+  }
+  
+  .nav-item:hover {
+    background-color: oklch(var(--accent) / 0.5);
+  }
+  
+  .nav-item-active {
+    @apply text-foreground;
+    background-color: oklch(var(--accent) / 0.5);
   }
   
   .chart-container {
-    @apply glass-panel p-6 md:p-8;
+    @apply glass-panel p-6 relative;
+    background-color: oklch(var(--card) / 0.95);
   }
-
-  .input-field {
-    @apply w-full px-4 py-3 bg-background border border-border rounded-lg text-foreground 
-           placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary 
-           focus:border-transparent transition-all duration-200;
+  
+  .chart-header {
+    @apply flex items-center justify-between mb-6;
   }
-
-  .btn-primary {
-    @apply px-6 py-3 bg-primary text-foreground font-semibold rounded-lg 
-           hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 
-           transition-all duration-200 active:scale-95;
+  
+  .chart-title {
+    @apply text-lg font-semibold text-foreground;
   }
-
-  .btn-secondary {
-    @apply px-6 py-3 bg-muted text-foreground font-semibold rounded-lg border border-border
-           hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-primary/50 
-           transition-all duration-200 active:scale-95;
+  
+  .chart-subtitle {
+    @apply text-sm text-muted-foreground;
   }
-
-  .tooltip-trigger {
-    @apply inline-flex items-center justify-center w-5 h-5 rounded-full bg-border/50 
-           text-muted-foreground hover:bg-border hover:text-foreground 
-           transition-colors duration-200 cursor-help;
+  
+  .data-table {
+    @apply w-full;
   }
-
+  
+  .data-table-header {
+    @apply text-xs font-medium text-muted-foreground uppercase tracking-wider text-left pb-3 border-b;
+    border-color: oklch(var(--border) / 0.5);
+  }
+  
+  .data-table-cell {
+    @apply py-3 text-sm text-foreground border-b;
+    border-color: oklch(var(--border) / 0.3);
+  }
+  
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge-success {
+    @apply text-chart-3;
+    background-color: oklch(var(--chart-3) / 0.2);
+  }
+  
+  .badge-warning {
+    @apply text-chart-5;
+    background-color: oklch(var(--chart-5) / 0.2);
+  }
+  
+  .badge-error {
+    @apply text-destructive;
+    background-color: oklch(var(--destructive) / 0.2);
+  }
+  
+  .tooltip {
+    @apply absolute z-50 px-3 py-2 text-xs font-medium text-primary-foreground 
+           bg-foreground rounded-sm shadow-lg pointer-events-none;
+  }
+  
+  .section-header {
+    @apply flex items-center justify-between mb-6;
+  }
+  
   .section-title {
-    @apply text-lg font-semibold text-foreground/90 uppercase tracking-wider mb-4;
+    @apply text-xl font-semibold text-foreground;
   }
-
-  .input-label {
-    @apply block text-sm font-medium text-foreground/80 mb-2;
+  
+  .section-description {
+    @apply text-sm text-muted-foreground;
   }
-
-  .metric-card {
-    @apply glass-panel p-6 flex flex-col space-y-2;
+  
+  .stats-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4;
   }
-
-  .metric-label {
-    @apply text-sm font-medium text-muted-foreground uppercase tracking-wider;
+  
+  .form-group {
+    @apply space-y-2;
   }
-
-  .metric-value {
-    @apply text-3xl font-bold text-foreground;
+  
+  .form-label {
+    @apply text-sm font-medium text-foreground;
   }
-
-  @keyframes pulse-slow {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.7;
-    }
+  
+  .form-helper {
+    @apply text-xs text-muted-foreground;
   }
-
-  .animate-pulse-slow {
-    animation: pulse-slow 3s ease-in-out infinite;
+  
+  .divider {
+    @apply border-t my-6;
+    border-color: oklch(var(--border) / 0.5);
   }
-
+  
+  .skeleton {
+    @apply animate-pulse rounded-sm;
+    background-color: oklch(var(--muted) / 0.5);
+  }
+  
   @keyframes slide-up {
     from {
-      transform: translateY(20px);
+      transform: translateY(10px);
       opacity: 0;
     }
     to {
@@ -136,11 +275,7 @@
       opacity: 1;
     }
   }
-
-  .animate-slide-up {
-    animation: slide-up 0.5s ease-out;
-  }
-
+  
   @keyframes fade-in {
     from {
       opacity: 0;
@@ -149,85 +284,48 @@
       opacity: 1;
     }
   }
-
+  
+  @keyframes scale-in {
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+    animation-fill-mode: both;
+  }
+  
   .animate-fade-in {
-    animation: fade-in 0.5s ease-in-out;
+    animation: fade-in 0.3s ease-out;
+    animation-fill-mode: both;
+  }
+  
+  .animate-scale-in {
+    animation: scale-in 0.3s ease-out;
+    animation-fill-mode: both;
   }
 }
 
 @layer utilities {
   .text-gradient {
-    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary to-chart-1 bg-clip-text text-transparent;
   }
-
+  
   .text-balance {
     text-wrap: balance;
   }
-}
-
-/* Clerk Component Overrides */
-.cl-internal-b3fm6y {
-  background-color: #1A1A1A !important;
-}
-
-.cl-card,
-.cl-footer,
-.cl-footerAction {
-  background-color: #1A1A1A !important;
-}
-
-.cl-footer {
-  border-top: 1px solid #2A2A2A !important;
-}
-
-.cl-socialButtonsBlockButton {
-  background-color: #1A1A1A !important;
-  border: 1px solid #2A2A2A !important;
-  color: #F5F5F5 !important;
-}
-
-.cl-socialButtonsBlockButton:hover {
-  background-color: rgba(26, 26, 26, 0.8) !important;
-  border-color: rgba(199, 31, 55, 0.5) !important;
-}
-
-.cl-dividerLine {
-  background-color: #2A2A2A !important;
-}
-
-.cl-dividerText {
-  color: #B8B9C3 !important;
-  background-color: #111111 !important;
-  padding: 0 0.5rem !important;
-}
-
-.cl-formFieldInput {
-  background-color: #111111 !important;
-  border: 1px solid #2A2A2A !important;
-  color: #F5F5F5 !important;
-}
-
-.cl-formFieldInput:focus {
-  border-color: #C71F37 !important;
-  box-shadow: 0 0 0 1px #C71F37 !important;
-}
-
-.cl-formFieldLabel {
-  color: rgba(245, 245, 245, 0.8) !important;
-}
-
-.cl-footerActionText {
-  color: #F5F5F5 !important;
-}
-
-.cl-footerActionLink {
-  color: #C71F37 !important;
-}
-
-.cl-footerActionLink:hover {
-  color: rgba(199, 31, 55, 0.8) !important;
-}
-
-.cl-internal-1dauvpw {
-  background-color: #1A1A1A !important;
+  
+  .backdrop-blur-xl {
+    backdrop-filter: blur(20px);
+  }
+  
+  .backdrop-blur-2xl {
+    backdrop-filter: blur(40px);
+  }
 }

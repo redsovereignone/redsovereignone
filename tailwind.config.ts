@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: ['class'],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,39 +10,51 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#111111",
-        foreground: "#F5F5F5",
-        primary: {
-          DEFAULT: "#C71F37",
-          foreground: "#F5F5F5",
-        },
-        secondary: {
-          DEFAULT: "#2B2D42",
-          foreground: "#F5F5F5",
-        },
-        accent: {
-          DEFAULT: "#EF476F",
-          foreground: "#F5F5F5",
-        },
-        muted: {
-          DEFAULT: "#1A1A1A",
-          foreground: "#B8B9C3",
-        },
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
         card: {
-          DEFAULT: "#1A1A1A",
-          foreground: "#F5F5F5",
+          DEFAULT: 'var(--card)',
+          foreground: 'var(--card-foreground)'
         },
         popover: {
-          DEFAULT: "#1A1A1A",
-          foreground: "#F5F5F5",
+          DEFAULT: 'var(--popover)',
+          foreground: 'var(--popover-foreground)'
         },
-        border: "#2A2A2A",
-        input: "#2A2A2A",
-        ring: "#C71F37",
+        primary: {
+          DEFAULT: 'var(--primary)',
+          foreground: 'var(--primary-foreground)'
+        },
+        secondary: {
+          DEFAULT: 'var(--secondary)',
+          foreground: 'var(--secondary-foreground)'
+        },
+        muted: {
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)'
+        },
+        accent: {
+          DEFAULT: 'var(--accent)',
+          foreground: 'var(--accent-foreground)'
+        },
         destructive: {
-          DEFAULT: "#EF4444",
-          foreground: "#F5F5F5",
+          DEFAULT: 'var(--destructive)',
+          foreground: 'var(--destructive-foreground)'
         },
+        border: 'var(--border)',
+        input: 'var(--input)',
+        ring: 'var(--ring)',
+        chart: {
+          '1': 'var(--chart-1)',
+          '2': 'var(--chart-2)',
+          '3': 'var(--chart-3)',
+          '4': 'var(--chart-4)',
+          '5': 'var(--chart-5)',
+        }
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
@@ -49,6 +62,8 @@ const config: Config = {
       animation: {
         "fade-in": "fade-in 0.5s ease-in-out",
         "slide-in": "slide-in 0.3s ease-out",
+        "slide-up": "slide-up 0.3s ease-out",
+        "scale-in": "scale-in 0.3s ease-out",
       },
       keyframes: {
         "fade-in": {
@@ -58,6 +73,14 @@ const config: Config = {
         "slide-in": {
           "0%": { transform: "translateY(-10px)", opacity: "0" },
           "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        "slide-up": {
+          "0%": { transform: "translateY(10px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        "scale-in": {
+          "0%": { transform: "scale(0.95)", opacity: "0" },
+          "100%": { transform: "scale(1)", opacity: "1" },
         },
       },
     },
