@@ -27,7 +27,18 @@ export default async function CalculatorPage() {
                 <Link href="/dashboard" className="text-foreground hover:text-primary transition-colors">
                   Dashboard
                 </Link>
-                <UserButton afterSignOutUrl="/" />
+                <UserButton 
+                  afterSignOutUrl="/"
+                  appearance={{
+                    baseTheme: 'dark',
+                    elements: {
+                      avatarBox: 'w-10 h-10',
+                      userButtonPopoverCard: 'bg-muted border border-border',
+                      userButtonPopoverText: 'text-foreground',
+                      userButtonPopoverFooter: 'hidden',
+                    },
+                  }}
+                />
               </div>
             ) : (
               <Link href="/sign-up" className="btn-primary">

@@ -37,7 +37,18 @@ export default async function DashboardPage() {
               <span className="text-sm text-muted-foreground">
                 {user.emailAddresses[0]?.emailAddress}
               </span>
-              <UserButton afterSignOutUrl="/" />
+              <UserButton 
+                afterSignOutUrl="/"
+                appearance={{
+                  baseTheme: 'dark',
+                  elements: {
+                    avatarBox: 'w-10 h-10',
+                    userButtonPopoverCard: 'bg-muted border border-border',
+                    userButtonPopoverText: 'text-foreground',
+                    userButtonPopoverFooter: 'hidden',
+                  },
+                }}
+              />
             </div>
           </div>
         </div>
